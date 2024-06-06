@@ -1,0 +1,109 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:../database.db"
+}
+
+model users {
+  user_id   Int    @id @default(autoincrement())
+  user_name String
+  password  String
+  role      Int    @default(0)
+}
+
+model projects {
+  project_id         Int           @id @default(autoincrement())
+  project_name       String
+  project_company    String
+  project_amount     String
+  project_start_date String
+  project_end_date   String
+  project_progress   Int           @default(0) // progress value for the project
+  project_stops      Int           @default(0) // count how many times the project is stopped
+  project_status     Int           @default(0) // [{0: "in progress", 1: "pending", 2: "finished"}]
+  sections           sections[]
+  guarantee          guarantee[]
+  insurance          insurance[]
+  maintenance        maintenance[]
+  files              files[]
+}
+
+model sections {
+  section_id         Int      @id @default(autoincrement())
+  section_name       String
+  path               String
+  icon               String
+  section_file_count Int      @default(1)
+  projectId          Int
+  project            projects @relation(fields: [projectId], references: [project_id], onDelete: Cascade)
+  files              files[]
+}
+
+model files {
+  file_id         Int      @id @default(autoincrement())
+  file_name       String
+  file_start_date String?
+  file_end_date   String?
+  sectionId       Int
+  projectId       Int
+  project         projects @relation(fields: [projectId], references: [project_id], onDelete: Cascade)
+  section         sections @relation(fields: [sectionId], references: [section_id], onDelete: Cascade)
+}
+
+model guarantee {
+  guarantee_id     Int              @id @default(autoincrement())
+  start_date       String
+  end_date         String
+  guarantee_number Int
+  projectId        Int
+  project          projects         @relation(fields: [projectId], references: [project_id], onDelete: Cascade)
+  guarantee_file   guarantee_file[]
+}
+
+model guarantee_file {
+  guarantee_file_id Int       @id @default(autoincrement())
+  file_name         String
+  guaranteeId       Int
+  guarantee         guarantee @relation(fields: [guaranteeId], references: [guarantee_id])
+}
+
+model insurance {
+  insurance_id   Int              @id @default(autoincrement())
+  start_date     String
+  end_date       String
+  projectId      Int
+  project        projects         @relation(fields: [projectId], references: [project_id], onDelete: Cascade)
+  insurance_file insurance_file[]
+}
+
+model insurance_file {
+  insurance_file_id Int       @id @default(autoincrement())
+  file_name         String
+  insuranceId       Int
+  insurance         insurance @relation(fields: [insuranceId], references: [insurance_id])
+}
+
+model maintenance {
+  maintenance_id   Int                @id @default(autoincrement())
+  start_date       String
+  end_date         String
+  projectId        Int
+  project          projects           @relation(fields: [projectId], references: [project_id], onDelete: Cascade)
+  maintenance_file maintenance_file[]
+}
+
+model maintenance_file {
+  maintenance_files_id Int         @id @default(autoincrement())
+  file_name            String
+  maintenanceId        Int
+  maintenance          maintenance @relation(fields: [maintenanceId], references: [maintenance_id])
+}
