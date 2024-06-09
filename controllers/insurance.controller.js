@@ -2,6 +2,8 @@ import {
   prismaErrorHandling,
   prismaInstance,
 } from '../middlewares/handleError.middleware.js'
+import path from 'path'
+import fs from 'fs'
 
 import multer from 'multer'
 
@@ -38,6 +40,7 @@ export default class Insurance {
         data: {
           start_date: req.body.start_date,
           end_date: req.body.end_date,
+          insurance_number: req.body.insurance_number * 1,
           projectId: req.body.projectId * 1,
           insurance_file: {
             create: {
@@ -81,6 +84,7 @@ export default class Insurance {
         data: {
           start_date: req.body.start_date,
           end_date: req.body.end_date,
+          insurance_number: req.body.insurance_number * 1,
           insurance_file: {
             create: {
               file_name: newPath,
@@ -95,5 +99,25 @@ export default class Insurance {
 
       res.status(200).send(created_insurance)
     })
+  }
+
+  static async DeleteInsurance(req, res) {
+    const insurance_file = await prisma.insurance_file.findFirst({
+      where: {
+        insuranceId: parseInt(req.params.id),
+      },
+    })
+
+    fs.unlink(insurance_file.file_name, (err, file) => {
+      if (err) console.error(err)
+    })
+
+    const deleted_insurance = await prisma.insurance.delete({
+      where: {
+        insurance_id: parseInt(req.params.id),
+      },
+    })
+
+    res.status(200).send(deleted_insurance)
   }
 }

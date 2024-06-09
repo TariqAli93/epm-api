@@ -73,23 +73,24 @@ model guarantee_file {
   guarantee_file_id Int       @id @default(autoincrement())
   file_name         String
   guaranteeId       Int
-  guarantee         guarantee @relation(fields: [guaranteeId], references: [guarantee_id])
+  guarantee         guarantee @relation(fields: [guaranteeId], references: [guarantee_id], onDelete: Cascade)
 }
 
 model insurance {
-  insurance_id   Int              @id @default(autoincrement())
-  start_date     String
-  end_date       String
-  projectId      Int
-  project        projects         @relation(fields: [projectId], references: [project_id], onDelete: Cascade)
-  insurance_file insurance_file[]
+  insurance_id     Int              @id @default(autoincrement())
+  start_date       String
+  end_date         String
+  insurance_number Int
+  projectId        Int
+  project          projects         @relation(fields: [projectId], references: [project_id], onDelete: Cascade)
+  insurance_file   insurance_file[]
 }
 
 model insurance_file {
   insurance_file_id Int       @id @default(autoincrement())
   file_name         String
   insuranceId       Int
-  insurance         insurance @relation(fields: [insuranceId], references: [insurance_id])
+  insurance         insurance @relation(fields: [insuranceId], references: [insurance_id], onDelete: Cascade)
 }
 
 model maintenance {
