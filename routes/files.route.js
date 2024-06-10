@@ -5,7 +5,7 @@ const fileRoutes = (app) => {
   // app.get("/api/files/:id", Files.FindFileById);
   // app.post("/api/files", Files.CreateFile);
   // app.put("/api/files/:id", Files.UpdateFile);
-  // app.delete("/api/files/:id", Files.DeleteFile);
+  app.delete('/api/files/:id', Files.DeleteFile)
 
   app.post('/api/files', Files.UploadFile)
 }

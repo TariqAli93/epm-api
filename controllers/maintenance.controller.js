@@ -22,36 +22,50 @@ export default class Maintenance {
       },
     })
 
-    const upload_process = multer({ storage: storage })
-
-    const upload = upload_process.single('file')
-
-    upload(req, res, async (err) => {
-      if (err) return res.status(500).send(err)
-
-      const oldPath = 'uploads/' + req.file.filename
-      const newPath =
-        'uploads/' + req.body.new_filename + path.extname(req.file.originalname)
-
-      fs.rename(oldPath, newPath, function (err) {
-        if (err) throw err
-      })
-
-      const created_maintenance = await prisma.maintenance.create({
+    if (req.file === undefined) {
+      await prisma.maintenance.create({
         data: {
           start_date: req.body.start_date,
           end_date: req.body.end_date,
           projectId: req.body.projectId * 1,
-          maintenance_file: {
-            create: {
-              file_name: newPath,
-            },
-          },
         },
       })
 
-      res.status(200).send(created_maintenance)
-    })
+      return res.status(200).send('Maintenance created successfully')
+    } else {
+      const upload_process = multer({ storage: storage })
+
+      const upload = upload_process.single('file')
+
+      upload(req, res, async (err) => {
+        if (err) return res.status(500).send(err)
+
+        const oldPath = 'uploads/' + req.file.filename
+        const newPath =
+          'uploads/' +
+          req.body.new_filename +
+          path.extname(req.file.originalname)
+
+        fs.rename(oldPath, newPath, function (err) {
+          if (err) throw err
+        })
+
+        const created_maintenance = await prisma.maintenance.create({
+          data: {
+            start_date: req.body.start_date,
+            end_date: req.body.end_date,
+            projectId: req.body.projectId * 1,
+            maintenance_file: {
+              create: {
+                file_name: newPath,
+              },
+            },
+          },
+        })
+
+        res.status(200).send(created_maintenance)
+      })
+    }
   }
 
   static async UpdateMaintenance(req, res) {
@@ -98,5 +112,39 @@ export default class Maintenance {
 
       res.status(200).send(created_maintenance)
     })
+  }
+
+  static async GetMaintenance(req, res) {
+    const maintenance = await prisma.maintenance.findMany()
+
+    res.status(200).send(maintenance)
+  }
+
+  static async GetMaintenanceById(req, res) {
+    const { id } = req.params
+
+    const maintenance = await prisma.maintenance.findUnique({
+      where: {
+        maintenance_id: Number(id),
+      },
+    })
+
+    if (!maintenance) {
+      return res.status(404).send('Maintenance not found')
+    }
+
+    res.status(200).send(maintenance)
+  }
+
+  static async DeleteMaintenance(req, res) {
+    const { id } = req.params
+
+    await prisma.maintenance.delete({
+      where: {
+        maintenance_id: Number(id),
+      },
+    })
+
+    res.status(200).send('Maintenance deleted successfully')
   }
 }

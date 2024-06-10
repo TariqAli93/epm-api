@@ -164,4 +164,20 @@ export default class Projects {
       console.error(err)
     }
   }
+
+  static async changeProjectStatus(req, res) {
+    try {
+      const { id } = req.params
+      const project = await prisma.projects.update({
+        where: { project_id: parseInt(id) },
+        data: {
+          project_status: req.body.project_status,
+        },
+      })
+      res.status(200).json(project)
+    } catch (err) {
+      res.status(500).send(prismaErrorHandling(err))
+      console.error(err)
+    }
+  }
 }

@@ -10,17 +10,69 @@ const prisma = prismaInstance
 // create login username and password for user account with jwt token
 export default class User {
   static async CreateUserAccount(req, res) {
-    const { username, password, role } = req.body
+    const { user_name, password, role } = req.body
 
     const created_user = await prisma.users.create({
       data: {
-        username,
+        user_name,
         password,
         role,
       },
     })
 
     res.status(200).send(created_user)
+  }
+
+  static async GetUsers(req, res) {
+    const users = await prisma.users.findMany()
+
+    res.status(200).send(users)
+  }
+
+  static async GetUsersById(req, res) {
+    const { id } = req.params
+
+    const user = await prisma.users.findUnique({
+      where: {
+        user_id: Number(id),
+      },
+    })
+
+    if (!user) {
+      return res.status(404).send('User not found')
+    }
+
+    res.status(200).send(user)
+  }
+
+  static async UpdateUser(req, res) {
+    const { id } = req.params
+    const { user_name, password, role } = req.body
+
+    const updated_user = await prisma.users.update({
+      where: {
+        user_id: Number(id),
+      },
+      data: {
+        user_name,
+        password,
+        role,
+      },
+    })
+
+    res.status(200).send(updated_user)
+  }
+
+  static async DeleteUser(req, res) {
+    const { id } = req.params
+
+    await prisma.users.delete({
+      where: {
+        user_id: Number(id),
+      },
+    })
+
+    res.status(204).send()
   }
 
   static async LoginUserAccount(req, res) {

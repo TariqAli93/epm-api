@@ -52,4 +52,35 @@ export default class Files {
       res.status(200).send(create_files)
     })
   }
+
+  static async GetFiles(req, res) {
+    const get_files = await prisma.files.findMany({
+      where: {
+        projectId: parseInt(req.params.projectId),
+        sectionId: parseInt(req.params.sectionId),
+      },
+    })
+
+    res.status(200).send(get_files)
+  }
+
+  static async DeleteFile(req, res) {
+    const deleted_file = await prisma.files.findFirst({
+      where: {
+        file_id: parseInt(req.params.id),
+      },
+    })
+
+    fs.unlink('uploads/' + deleted_file.file_name, function (err) {
+      if (err) throw err
+    })
+
+    const delete_files = await prisma.files.delete({
+      where: {
+        file_id: parseInt(req.params.id),
+      },
+    })
+
+    res.status(200).send(delete_files)
+  }
 }
