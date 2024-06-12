@@ -18,6 +18,20 @@ app.use(morgan('dev'))
 app.use(translateErrors)
 app.use(express.static('uploads'))
 
+app.get('/uploads/:filename', (req, res) => {
+  const filename = req.params.filename
+  const imagePath = path.join(__dirname, 'uploads', filename)
+
+  fs.readFile(imagePath, (err, data) => {
+    if (err) {
+      res.status(404).send('Image not found')
+    } else {
+      res.writeHead(200, { 'Content-Type': 'image/jpeg' }) // أو نوع المحتوى المناسب
+      res.end(data)
+    }
+  })
+})
+
 projectRoutes(app)
 fileRoutes(app)
 guaranteeRoutes(app)
