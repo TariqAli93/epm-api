@@ -13,12 +13,31 @@ const prisma = prismaInstance
 export default class Files {
   static async UploadFile(req, res) {
     // upload
+    const generateRandomAlphaName = (length = 5) => {
+      let name = ''
+      const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+
+      for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * alphabet.length)
+        name += alphabet[randomIndex]
+      }
+
+      return name
+    }
+
     const storage = multer.diskStorage({
       destination: function (req, file, cb) {
         cb(null, 'uploads/')
       },
       filename: function (req, file, cb) {
-        cb(null, Date.now() + '-' + file.originalname)
+        cb(
+          null,
+          Date.now() +
+            '-' +
+            '-' +
+            generateRandomAlphaName(6) +
+            path.extname(file.originalname),
+        )
       },
     })
 
@@ -30,20 +49,13 @@ export default class Files {
       if (err) return res.status(500).send(err)
 
       const oldPath = 'uploads/' + req.file.filename
-      const newFileName =
-        req.body.file_name +
-        '-' +
-        Date.now() +
-        path.extname(req.file.originalname)
-      const newPath = 'uploads/' + newFileName
-
-      fs.rename(oldPath, newPath, function (err) {
-        if (err) throw err
-      })
+      const newFileName = req.body.file_name
+      const newPath = 'uploads/' + req.file.filename
 
       const create_files = await prisma.files.create({
         data: {
           file_name: newFileName,
+          file_path: newPath,
           projectId: parseInt(req.body.projectId),
           sectionId: parseInt(req.body.sectionId),
         },
@@ -81,7 +93,7 @@ export default class Files {
       },
     })
 
-    fs.unlink('uploads/' + deleted_file.file_name, function (err) {
+    fs.unlink(deleted_file.file_path, function (err) {
       if (err) throw err
     })
 

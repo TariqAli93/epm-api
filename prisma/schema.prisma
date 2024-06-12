@@ -51,6 +51,7 @@ model sections {
 model files {
   file_id         Int      @id @default(autoincrement())
   file_name       String
+  file_path       String
   file_start_date String?
   file_end_date   String?
   sectionId       Int
@@ -72,6 +73,7 @@ model guarantee {
 model guarantee_file {
   guarantee_file_id Int       @id @default(autoincrement())
   file_name         String
+  file_path         String
   guaranteeId       Int
   guarantee         guarantee @relation(fields: [guaranteeId], references: [guarantee_id], onDelete: Cascade)
 }
@@ -89,6 +91,7 @@ model insurance {
 model insurance_file {
   insurance_file_id Int       @id @default(autoincrement())
   file_name         String
+  file_path         String
   insuranceId       Int
   insurance         insurance @relation(fields: [insuranceId], references: [insurance_id], onDelete: Cascade)
 }
@@ -105,6 +108,7 @@ model maintenance {
 model maintenance_file {
   maintenance_files_id Int         @id @default(autoincrement())
   file_name            String
+  file_path            String
   maintenanceId        Int
   maintenance          maintenance @relation(fields: [maintenanceId], references: [maintenance_id])
 }
