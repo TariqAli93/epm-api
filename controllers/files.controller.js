@@ -64,6 +64,16 @@ export default class Files {
     res.status(200).send(get_files)
   }
 
+  static async GetFilesById(req, res) {
+    const get_files = await prisma.files.findFirst({
+      where: {
+        file_id: parseInt(req.params.id),
+      },
+    })
+
+    res.status(200).send(get_files)
+  }
+
   static async DeleteFile(req, res) {
     const deleted_file = await prisma.files.findFirst({
       where: {

@@ -16,6 +16,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use(cors({ credentials: true, origin: true }))
 app.use(morgan('dev'))
 app.use(translateErrors)
+app.use(express.static('uploads'))
 
 projectRoutes(app)
 fileRoutes(app)
