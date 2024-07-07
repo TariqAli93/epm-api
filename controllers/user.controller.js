@@ -32,9 +32,11 @@ export default class User {
   static async GetUsersById(req, res) {
     const { id } = req.params
 
+    console.log(id)
+
     const user = await prisma.users.findUnique({
       where: {
-        user_id: Number(id),
+        user_id: id,
       },
     })
 

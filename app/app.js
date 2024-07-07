@@ -8,6 +8,8 @@ import insuranceRoutes from '../routes/insurance.route.js'
 import maintenanceRoutes from '../routes/maintenance.route.js'
 import userRoutes from '../routes/user.route.js'
 import sectionsRoutes from '../routes/sections.route.js'
+import installmentsRoutes from '../routes/installments.route.js'
+import companyRoutes from '../routes/company.route.js'
 import translateErrors from '../middlewares/translateErrors.js'
 import fs from 'fs'
 import path from 'path'
@@ -47,5 +49,7 @@ insuranceRoutes(app)
 maintenanceRoutes(app)
 userRoutes(app)
 sectionsRoutes(app)
+installmentsRoutes(app)
+companyRoutes(app)
 
 export default app

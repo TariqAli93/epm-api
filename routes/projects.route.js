@@ -7,6 +7,9 @@ const projectRoutes = (app) => {
   app.put('/api/projects/:id', Projects.UpdateProject)
   app.delete('/api/projects/:id', Projects.DeleteProject)
   app.put('/api/projects/status/:id', Projects.changeProjectStatus)
+  app.put('/api/projects/changeOrder/:id', Projects.projectChangeOrder)
+  app.get('/api/projects/changeOrder/:id', Projects.GetProjectChangeOrder)
+  app.delete('/api/projects/changeOrder/:id', Projects.deleteProjectChangeOrder)
 }
 
 export default projectRoutes

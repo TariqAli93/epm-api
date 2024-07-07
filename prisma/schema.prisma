@@ -14,27 +14,81 @@ datasource db {
 }
 
 model users {
-  user_id   Int    @id @default(autoincrement())
+  user_id   Int        @id @default(autoincrement())
   user_name String
   password  String
-  role      Int    @default(0)
+  role      Int        @default(0)
+  projects  projects[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 }
 
 model projects {
-  project_id         Int           @id @default(autoincrement())
-  project_name       String
-  project_company    String
-  project_amount     String
-  project_start_date String
-  project_end_date   String
-  project_progress   Int           @default(0) // progress value for the project
-  project_stops      Int           @default(0) // count how many times the project is stopped
-  project_status     Int           @default(0) // [{0: "in progress", 1: "pending", 2: "finished"}]
-  sections           sections[]
-  guarantee          guarantee[]
-  insurance          insurance[]
-  maintenance        maintenance[]
-  files              files[]
+  project_id             Int                     @id @default(autoincrement())
+  project_name           String
+  project_company        String
+  project_amount         Float
+  project_start_date     String
+  project_end_date       String?
+  project_days           Int?                    @default(0) // days left for the project to end
+  project_progress       Int                     @default(0) // progress value for the project
+  project_stops          Int                     @default(0) // count how many times the project is stopped
+  project_status         Int                     @default(0) // [{0: "in progress", 1: "pending", 2: "finished"}]
+  project_payment_status Int?                    @default(0) // [{0: "pending", 1: "paid"}]
+  project_payment_date   String?
+  project_payment_amount String?
+  project_payment_desc   String?
+  sections               sections[]
+  guarantee              guarantee[]
+  insurance              insurance[]
+  maintenance            maintenance[]
+  files                  files[]
+  createdBy              users                   @relation(fields: [userId], references: [user_id])
+  userId                 Int
+  installments           installments[]
+  project_change_orders  project_change_orders[]
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
+}
+
+model installments {
+  installment_id     Int      @id @default(autoincrement())
+  installment_date   String?
+  installment_title  String?
+  installment_amount String?
+  installment_paid   Boolean  @default(false)
+  installment_due    String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  projectId          Int
+  project            projects @relation(fields: [projectId], references: [project_id], onDelete: Cascade)
+}
+
+model project_change_orders {
+  change_order_id    Int      @id @default(autoincrement())
+  change_order_date  String?
+  change_order_value Int?
+  change_order_cost  Float?
+  projectId          Int
+  project            projects @relation(fields: [projectId], references: [project_id], onDelete: Cascade)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model company {
+  company_id    Int             @id @default(autoincrement())
+  company_name  String
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  company_files company_files[]
+}
+
+model company_files {
+  company_file_id Int     @id @default(autoincrement())
+  file_name       String
+  file_path       String
+  companyId       Int
+  company         company @relation(fields: [companyId], references: [company_id], onDelete: Cascade)
 }
 
 model sections {
